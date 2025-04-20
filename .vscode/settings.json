@@ -1,0 +1,7 @@
+{
+  "spellright.language": ["es"],
+  "spellright.documentTypes": [
+    "latex"
+  ],
+  "liveServer.settings.port": 5501
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="prueba.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Tabla de Puntuación</h1>
+    <form id="playerForm">
+        <input type="text" id="playerName" placeholder="Ingresa tu nombre" required>
+        <button type="submit">Juguemos!</button>
+    </form>
+    <table id="scoreTable">
+        <thead>
+            <tr>
+                <th>Posición</th>
+                <th>Jugador</th>
+                <th>Puntuación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas se generarán dinámicamente aquí -->
+        </tbody>
+    </table>
+    <button id="playGame" disabled>Jugar Partida</button>
+    <script src="prueba.js"></script>
+</body>
+</html>
