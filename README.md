@@ -17,7 +17,7 @@ Embark on a cosmic typing journey with **Orion Typing Game**! 🚀 Type falling 
 
 ## Getting Started
 
-- Clone the repo: `git clone [https://github.com/DavidFG16/Orion-Juego-de-Typing.git](https://github.com/DavidFG16/Orion-Juego-de-Typing.git)`
+- Clone the repo: `git clone https://github.com/DavidFG16/Orion-Juego-de-Typing.git`
 - Open `index.html` in a browser.
 - Adjust speed/word count in code and play!
 
