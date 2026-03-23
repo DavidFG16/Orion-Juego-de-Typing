@@ -1,55 +1,50 @@
 import { getSettingsFromLocalStorage } from './utils.js';
-const wordArray = [
-    "aventura", "mariposa", "complejo", "felicidad", "fantástico", "elefante",
-    "misterio", "tecnología", "creatividad", "universidad", "maravilla", "increíble",
-    "esperanza", "naturaleza", "personalidad", "imposible", "interesante", "silencioso",
-    "generación", "estupendo", "pintoresco", "profundidad", "sorprendente", "contagioso",
-    "oportunidad", "inolvidable", "curiosidad", "imaginario", "deslumbrante", "ciudadano",
-    "pasión", "recomendación", "delicioso", "encantador", "inspiración", "espectacular",
-    "adrenalina", "crecimiento", "enriquecedor", "efervescencia", "vulnerabilidad",
-    "extraordinario", "resplandor", "perspectiva", "atractivo", "consistencia", "enigmático",
-    "marioneta", "sentimiento", "travesía", "atmósfera", "realidad", "adversidad",
-    "magnífico", "similitud", "paralelo", "infinito", "aprendizaje", "colaboración",
-    "independencia", "trascendencia", "equilibrio", "pintura", "alucinante", "revolución",
-    "inteligencia", "espontáneo", "satisfacción", "transformación", "cuestionamiento",
-    "autenticidad", "conciencia", "integridad", "colosal", "inquietud", "desarrollo",
-    "mágico", "innovación", "experiencia", "profundo", "autonomía", "celebración", "sublime",
-    "ternura", "entusiasmo", "espíritu", "cosmos", "conexión", "brillante", "historia",
-    "compasión", "invencible", "abundancia", "interacción", "genuino", "espacial",
-    "recuerdo", "sublimidad", "solidaridad", "perspicacia", "esencia", "influencia",
-    "apasionado", "relevancia", "insignificante", "contradicción", "inmortal", "creativo",
-    "imaginación", "incertidumbre", "inexplicable", "cualidad", "maravilloso", "espectro",
-    "complicidad", "interminable", "trascendental", "indomable", "autenticidad", "valentía",
-    "singularidad", "propósito", "aventurero", "reflexión", "consciencia", "nostalgia",
-    "serenidad", "innovador", "fascinante", "inspirador", "inigualable", "memoria",
-    "vulnerable", "delicadeza", "amistad", "intrépido", "intuición", "paradigma", "ausencia",
-    "navegante", "melodía", "desafío", "inquietante", "esplendor", "efervescencia",
-    "sensibilidad", "deslumbrante", "infinito", "contemplación", "mariposa", "belleza",
-    "conciencia", "armonía", "emoción", "trascendencia", "conexión", "vivencia", "plenitud",
-    "impresionante", "encanto", "irrepetible", "vibrante", "originalidad", "imaginario",
-    "fascinación", "resistencia", "profundidad", "inolvidable", "intensidad", "percepción",
-    "integridad", "sorprendente", "espontáneo", "espíritu", "despertar", "creatividad",
-    "autenticidad", "impacto", "caminante", "persistencia", "universo", "naturaleza",
-    "inspiración", "maravilla", "experiencia", "aventura", "libertad", "cambiar",
-    "desarrollo", "cuestionamiento", "extraordinario", "posibilidad", "abundancia",
-    "compartir", "despertar", "esencia", "riqueza", "compromiso", "época", "sabiduría"
-];
 
-export const getWordsArrayBySettingsOrPlatform = () => {
+// Fetch from a massive, 80k word grammatical dictionary to guarantee high-quality words
+let cachedDictionary = null;
 
-    const gameSettings = getSettingsFromLocalStorage();
-    //Verifica si es Windows o Mac
-    if (navigator.userAgent.includes('Win') && gameSettings?.['enable-accents']) {
-        return wordArray;
+const normalizeWord = (word) => {
+    return word.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
+const fetchDictionary = async () => {
+    if (cachedDictionary) return cachedDictionary;
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/javierarce/palabras/master/listado-general.txt');
+        if (!response.ok) throw new Error("Dictionary fetch failed");
+        const text = await response.text();
+        
+        // Parse the text file (newline-separated) and safely keep only valid alphabetical Spanish strings
+        const allWords = text.split('\n')
+                             .map(w => w.trim().toLowerCase())
+                             .filter(w => /^[a-zñáéíóúü]+$/.test(w) && w.length >= 4 && w.length <= 12);
+        
+        cachedDictionary = allWords;
+        return cachedDictionary;
+    } catch (e) {
+        console.error("Critical error loading dictionary", e);
+        // Minimal absolute fallback if github fails, maintaining linguistic rules
+        cachedDictionary = ["error", "conexión", "juego", "espacial", "nave", "asteroide", "perdón", "galaxia", "estrella"];
+        return cachedDictionary;
     }
-    return removeAccentsFromWordsArray();
 }
 
-const removeAccentsFromWordsArray = () => {
-    return wordArray.filter(word => !hasAccent(word));
-}
+export const fetchWordsArrayBySettings = async () => {
+    const dict = await fetchDictionary();
+    
+    const gameSettings = getSettingsFromLocalStorage();
+    const isMacOrLinux = !navigator.userAgent.includes('Win');
+    const shouldNormalize = isMacOrLinux || gameSettings?.['enable-accents'] !== 'on';
 
-const hasAccent = (word) => {
-    const specialChars = /[áéíóúÁÉÍÓÚ]/;
-    return specialChars.test(word);
-}
+    // Pick unique 100 random words from the dictionary
+    const randomWords = new Set();
+    while (randomWords.size < 100) {
+        let pickedWord = dict[Math.floor(Math.random() * dict.length)];
+        if (shouldNormalize) {
+            pickedWord = normalizeWord(pickedWord);
+        }
+        randomWords.add(pickedWord);
+    }
+    
+    return Array.from(randomWords);
+};
