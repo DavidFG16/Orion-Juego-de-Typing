@@ -33,7 +33,7 @@ Embark on a cosmic typing journey with **Orion Typing Game**! 🚀 Type falling 
 ## Contributors
 
 - Karol Caballero - [Instagram](https://www.instagram.com/dayanna_c04/)
-- Lorena Contreras - [Instagram](https://www.instagram.com/lorenm_ipsum/)
+- Lorena Contreras - [Instagram](https://www.instagram.com/loremn_ipsum/)
 - David Gamboa - [Instagram](https://www.instagram.com/davidfgamboa/)
 
 ## Contributing
